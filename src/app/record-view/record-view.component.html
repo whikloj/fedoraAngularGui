@@ -1,0 +1,7 @@
+<div class="recordView container">
+    <app-header></app-header>
+    <section>
+        <app-display-record *ngIf="record != undefined" [record]="record"></app-display-record>
+        <app-record-actions></app-record-actions>
+    </section>
+</div>

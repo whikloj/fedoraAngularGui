@@ -1,0 +1,21 @@
+<div class="recordView" *ngIf="record != undefined">
+    <h2>{{ record.getId() }}</h2>
+    <div class="navigation">
+        <ul class="breadcrumbs">
+            <li><a href="path/info%3Afedora">Home</a></li>
+            <li *ngFor="let path of generateBreadcrumb(record.getId())"><a [routerLink]="[ '/path/' + makeEncodedUri(path[1]) ]">{{ path[0] }}</a></li>
+        </ul>
+    </div>
+    <dt *ngIf="record.getCreatedDate()"><label for="createdDate">Created at</label></dt>
+    <dl *ngIf="record.getCreatedDate()"><span id="createdDate">{{ record.getCreatedDate() | date:'medium' }}</span></dl>
+    <dt *ngIf="record.getCreatedBy()"><label for="createdBy">Created by</label></dt>
+    <dl *ngIf="record.getCreatedBy()"><span id="createdBy">{{ record.getCreatedBy() }}</span></dl>
+    <dt *ngIf="record.getLastModifiedDate()"><label for="lastModifiedDate">Last modified at</label></dt>
+    <dl *ngIf="record.getLastModifiedDate()"><span id="lastModifiedDate">{{ record.getLastModifiedDate() | date:'medium' }}</span></dl>
+    <dt *ngIf="record.getLastModifiedBy()"><label for="lastModifiedBy">Last modified by</label></dt>
+    <dl *ngIf="record.getLastModifiedBy()"><span id="lastModifiedBy">{{ record.getLastModifiedBy() }}</span></dl>
+    <label for="contains">Children</label><span class="badge" *ngIf="record != undefined">{{ record.getContainsCount() }}</span>
+    <ol *ngIf="record.getContainsCount() > 0">
+        <li *ngFor="let child of record.getContains()"><a [routerLink]="[ '/path/' + this.makeEncodedUri(child) ]">{{ child }}</a></li>
+    </ol>
+</div>

@@ -1,0 +1,84 @@
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+
+.navbar {
+    position: relative;
+    z-index: 1000;
+    min-height: 50px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+}
+.navbar-default {
+    display: block;
+}
+.navbar-collapse {
+    height: auto;
+    overflow-y: visible;
+    border-color: #e6e6e6;
+    max-height: 340px;
+    padding-right: 15px;
+    padding-left: 15px;
+    overflow-x: visible;
+}
+.nav > li {
+    display: block;
+}
+.nav {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    > li {
+        position: relative;
+        display: block;
+        float: left;
+        > a {
+            color: #777;
+            position: relative;
+            display: block;
+            padding: 10px 15px;
+        }
+    }
+}
+.navbar-nav {
+    padding-left: 0;
+    margin: 0;
+    > li {
+        position: relative;
+        display: block;
+        > a {
+            color: #777;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            line-height: 20px;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #333;
+            background-color: transparent;
+        }
+    }
+}
+.navbar-default {
+    border-color: #e6e6e6;
+    .navbar-brand {
+        color: #777;
+        float: left;
+        padding: 15px 15px;
+        font-size: 18px;
+        line-height: 20px;
+        text-decoration: none;
+    }
+    .navbar-brand:hover {
+        background-color: transparent;
+        color: #5e5e5e;
+    }
+}
+
+@media (min-width: 768px) {
+    .navbar-toggle {
+        display: none;
+    }
+}

@@ -1,0 +1,21 @@
+<div class="fedoraConfig">
+    <h1>Fedora Client</h1>
+    <form [formGroup]="configForm" (ngSubmit)="submitConfig(configForm)">
+        <div class="row">
+            <label for="fedoraBaseUrl">Fedora URL</label>
+            <input type="text" formControlName="fedoraBaseUrl" placeholder="http://fedora-server:8080/fcrepo/rest" />
+            <small class="error" *ngIf="this.configForm['controls']['fedoraBaseUrl'].hasError('required') && configForm['controls']['fedoraBaseUrl'].touched">Fedora URL is required.</small>
+            <small class="error" *ngIf="this.configForm['controls']['fedoraBaseUrl'].hasError('unauthorized') && configForm['controls']['fedoraBaseUrl'].touched">Fedora URL returns 401 unauthorized.</small>
+            <small class="error" *ngIf="this.configForm['controls']['fedoraBaseUrl'].hasError('invalid') && configForm['controls']['fedoraBaseUrl'].touched">Fedora URL is not valid.</small>
+        </div>
+        <div class="row">
+            <label for="fedoraUsername">Fedora Username</label>
+            <input type="text" formControlName="fedoraUsername" placeholder="fedoraAdmin" />
+        </div>
+        <div class="row">
+            <label for="fedoraPassword">Fedora Password</label>
+            <input type="password" formControlName="fedoraPassword" placeholder="fedoraAdmin" />
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>

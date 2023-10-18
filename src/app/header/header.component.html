@@ -1,0 +1,26 @@
+<div class="alert alert-info" role="alert">
+    <p>Fedora is an open source project supported entirely by it's users. To continue the on-going maintenance of the software and ensure Fedora is meeting the needs of the community, we are working to gather information on current installations. We strongly encourage all users to register their instance in the DuraSpace Community Supported Program Registry hosted by LYRASIS.</p>
+    <p><a class="btn btn-primary" href="https://registry.lyrasis.org/" role="button">Register your installation today</a></p>
+</div>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="http://localhost:8080/rest/">Fedora</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+            <li><a routerLink="/">Home</a></li>
+            <li><a href="http://localhost:8080/rest/fcr:search">Search</a></li>
+            <li><a [routerLink]="['/configure-gui-client']">Configuration</a></li>
+        </ul>
+    </div>
+
+</nav>
