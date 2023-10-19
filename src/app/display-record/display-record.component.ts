@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FedoraClientService } from '../fedora-client.service';
 import { FedoraResource } from '../fedora-resource';
-import { ClientConfiguration } from '../client-configuration';
 import { ClientConfigurationService } from '../client-configuration.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -31,12 +30,13 @@ export class DisplayRecordComponent {
     if (path.startsWith(this.fedoraBaseUrl)) {
       path = path.substring(this.fedoraBaseUrl.length);
     }
-    const pathParts :string[] = path.split('/');
+    const pathParts: string[] = path.split('/');
     let breadcrumb: string[][] = [];
+    let fullPath: string = '';
     for (let i = 0; i < pathParts.length; i++) {
-      const uri: string = path.substring(path.lastIndexOf('/', i));
+      fullPath += (fullPath.length > 0 ? '/' : '') + pathParts[i];
       if (pathParts[i].length > 0) {
-        breadcrumb.push([ pathParts[i], uri ] );
+        breadcrumb.push([ pathParts[i], fullPath ] );
       }
     }
     return breadcrumb;

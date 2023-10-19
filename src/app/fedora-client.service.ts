@@ -5,21 +5,22 @@ import { FedoraResource } from './fedora-resource';
 import { ClientConfiguration } from './client-configuration';
 import { ClientConfigurationService } from './client-configuration.service';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class FedoraClientService {
 
   httpClient: HttpClient;
-  basicAuthHeader?: string;
+  basicAuthHeader: string = '';
   configService: ClientConfigurationService;
 
   constructor(private http: HttpClient, private config: ClientConfigurationService) {
     this.httpClient = http;
     this.configService = config;
     config.config$.subscribe((config: ClientConfiguration) => {
-      console.log("Update Basic auth header");
-      this.basicAuthHeader = 'Basic ' + btoa(config.fedoraUsername + ':' + config.fedoraPassword);
+      this.basicAuthHeader = 'Basic ' + btoa(config.getUsername() + ':' + config.getPassword());
+      console.log(`Update Basic auth header ${this.basicAuthHeader}`);
     });
   }
 
@@ -33,13 +34,17 @@ export class FedoraClientService {
     return url;
   }
 
-  getRecord(url: string): Observable<HttpResponse<FedoraResource>|HttpErrorResponse> {
+  getRecord(url: string, isBinary: boolean=false): Observable<HttpResponse<FedoraResource>|HttpErrorResponse> {
     const headers = new HttpHeaders({
       'Accept': 'application/ld+json',
     });
     if (this.basicAuthHeader != undefined) {
       headers.append('Authorization', this.basicAuthHeader);
     }
+    if (isBinary) {
+      url += '/fcr:metadata';
+    }
+    console.log({'getRecord url': url, 'headers': headers});
     return this.httpClient.get<FedoraResource>(this._addHostToUrl(url), {
       headers: headers,
       observe: 'response',
@@ -48,7 +53,6 @@ export class FedoraClientService {
   }
 
   patchRecord(url: string, body: string): Observable<HttpResponse<any>|HttpErrorResponse> {
-    
       const headers = new HttpHeaders({
         'Accept': 'application/ld+json',
         'Content-Type': 'application/sparql-update'
@@ -58,7 +62,8 @@ export class FedoraClientService {
       }
       return this.httpClient.patch<any>(this._addHostToUrl(url), body, {
         headers: headers,
-        observe: 'response'
+        observe: 'response',
+        withCredentials: (this.basicAuthHeader != undefined),
       }).pipe(catchError((err: HttpErrorResponse) => of(err)));
   }
 
@@ -69,7 +74,8 @@ export class FedoraClientService {
     }
     return this.httpClient.delete(url, {
       headers: headers,
-      observe: 'response'
+      observe: 'response',
+      withCredentials: (this.basicAuthHeader != undefined),
     }).pipe(catchError((err: HttpErrorResponse) => of(err)));
   }
 
@@ -82,7 +88,8 @@ export class FedoraClientService {
     }
     return this.httpClient.put<string>(this._addHostToUrl(url), body, {
       headers: headers,
-      observe: 'response'
+      observe: 'response',
+      withCredentials: (this.basicAuthHeader != undefined),
     }).pipe(catchError((err: HttpErrorResponse) => of(err)));
   }
 
@@ -98,7 +105,8 @@ export class FedoraClientService {
     }
     return this.httpClient.post<string>(this._addHostToUrl(parentUrl), body, {
       headers: headers,
-      observe: 'response'
+      observe: 'response',
+      withCredentials: (this.basicAuthHeader != undefined),
     }).pipe(catchError((err: HttpErrorResponse) => of(err)));
   }
 
@@ -107,13 +115,23 @@ export class FedoraClientService {
     if (this.basicAuthHeader != undefined) {
       headers.append('Authorization', this.basicAuthHeader);
     }
-    console.log({'headers': headers, 'url': url});
+    console.log({'headers': headers, 'headUrl url': url});
     return this.httpClient.head(this._addHostToUrl(url), {
       headers: headers,
       observe: 'response',
-      withCredentials: (this.basicAuthHeader != undefined)
+      withCredentials: (this.basicAuthHeader != undefined),
     }).pipe(catchError((err: HttpErrorResponse) => of(err)));
   }
 
-
+  decodeLinkHeaders(linkHeaders: string): string[][] {
+    const links = linkHeaders.split(',');
+    const linkArray: string[][] = [];
+    for (let link of links) {
+      const linkParts = link.split(';');
+      const linkUrl = linkParts[0].trim().replace(/<|>/g, '');
+      const linkRel = linkParts[1].trim().replace('rel=', '').replace(/"/g, '');
+      linkArray.push([linkRel, linkUrl]);
+    }
+    return linkArray;
+  }
 }

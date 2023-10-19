@@ -1,13 +1,11 @@
 export interface IFedoraResource {
     id: string;
     type: string[];
-    createdDate: Date;
-    createdBy: string;
-    lastModifiedDate: Date;
-    lastModifiedBy: string;
-    contains: string[];
-    triples: string[][]; // [ [subject, predicate, object], ... ]
 }
+
+export const LDP_PREFIX: string = 'http://www.w3.org/ns/ldp#';
+
+export const LDP_NON_RDF_RESOURCE: string = LDP_PREFIX + 'NonRDFSource';
 
 export class FedoraResource implements IFedoraResource {
     id: string = '';
@@ -98,5 +96,15 @@ export class FedoraResource implements IFedoraResource {
     setTriples(triples: string[][]): void {
         this.triples = triples;
     }
+}
 
+export class FedoraBinary implements IFedoraResource {
+    id: string = '';
+    type: string[] = [];
+    metadata: FedoraResource | undefined;
+
+    constructor(resource: any) {
+        this.id = resource['@id'] || '';
+        this.type = resource['@type'] || [];
+    }
 }

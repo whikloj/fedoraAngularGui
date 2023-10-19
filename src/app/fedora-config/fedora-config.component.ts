@@ -31,9 +31,9 @@ export class FedoraConfigComponent {
     cs.config$.subscribe((config: ClientConfiguration) => {
       console.log("Update client configuration");
       this.clientConfiguration = config
-      this.configForm.controls['fedoraBaseUrl'].setValue(this.clientConfiguration.fedoraBaseUrl);
-      this.configForm.controls['fedoraUsername'].setValue(this.clientConfiguration.fedoraUsername);
-      this.configForm.controls['fedoraPassword'].setValue(this.clientConfiguration.fedoraPassword);
+      //this.configForm.controls['fedoraBaseUrl'].setValue(this.clientConfiguration.fedoraBaseUrl);
+      //this.configForm.controls['fedoraUsername'].setValue(this.clientConfiguration.fedoraUsername);
+      //this.configForm.controls['fedoraPassword'].setValue(this.clientConfiguration.fedoraPassword);
     });
     this.configService = cs;
     this.fedoraClient = fc;
@@ -42,7 +42,7 @@ export class FedoraConfigComponent {
 
   submitConfig(theForm: any): void {
     console.log({'theform': theForm});
-    if (!theForm.valid) {
+    if (!theForm.valid && !theForm.dirty) {
       return;
     }
     if (theForm.value.fedoraUsername.trim().length > 0 || theForm.value.fedoraPassword.trim().length > 0) {
@@ -59,11 +59,11 @@ export class FedoraConfigComponent {
     }
     if (theForm.value.fedoraBaseUrl.trim().length > 0) {
       const baseUrl = theForm.value.fedoraBaseUrl.trim();
+      console.log({'baseUrl': baseUrl});
       this.fedoraClient.headUrl(baseUrl).subscribe((response: HttpResponse<any>|HttpErrorResponse) => {
         console.log({'response': response});
         if (response.ok) {
-          this.clientConfiguration.fedoraBaseUrl = baseUrl;
-          this.configService.setBaseUrl(this.clientConfiguration.fedoraBaseUrl);
+          this.configService.setBaseUrl(baseUrl);
           this.configForm.controls['fedoraBaseUrl'].setErrors(null);
           this.router.navigate(['/']);
         } else if (response.status == 401) {

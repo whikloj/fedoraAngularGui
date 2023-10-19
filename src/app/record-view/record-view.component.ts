@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FedoraResource } from '../fedora-resource';
+import { FedoraResource, LDP_NON_RDF_RESOURCE } from '../fedora-resource';
 import { FedoraClientService } from '../fedora-client.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
@@ -14,7 +14,7 @@ export class RecordViewComponent {
   record: FedoraResource | undefined;
   errorMessage: string = '';
   fedoraClient: FedoraClientService;
-  private readonly defaultPath = 'info%3Afedora';
+  private readonly defaultPath = '';
 
   constructor(private fc: FedoraClientService, private router: ActivatedRoute) {
     this.fedoraClient = fc;
@@ -33,20 +33,38 @@ export class RecordViewComponent {
   }
 
   private _loadRecord(decoded_path: string): void {
-    this.fedoraClient.getRecord(decoded_path).subscribe((response: HttpResponse<FedoraResource>|HttpErrorResponse) => {
-      console.log({'response': response});
+    let isBinary: boolean = false;
+    this.fedoraClient.headUrl(decoded_path).subscribe((response: HttpResponse<any>|HttpErrorResponse) => {
       if (response instanceof HttpErrorResponse) {
         console.log({'error': response.error});
         this.errorMessage = response.error;
-      } else if (response.status == 200 && response.body != undefined) {
-        console.log({'body': response.body});
-        if (response.body instanceof Array && response.body.length > 0) {
-          this.record = new FedoraResource(response.body[0]);
-          console.log({'record': this.record});
+      } else if (response.status == 200) {
+        if (response.headers.has('Link')) {
+          const linkHeader: string[] = response.headers.getAll('Link') || [];
+          for (let link of linkHeader) {
+            const links: string[][] = this.fedoraClient.decodeLinkHeaders(link);
+            isBinary = links.some((link: string[]) => {
+              if (link[0] == 'type' && link[1] == LDP_NON_RDF_RESOURCE) {
+                return true;
+              }
+              return false;
+            });
+          }
         }
-      } else {
-        this.record = undefined;
       }
+      this.fedoraClient.getRecord(decoded_path, isBinary).subscribe((response: HttpResponse<FedoraResource>|HttpErrorResponse) => {
+        if (response instanceof HttpErrorResponse) {
+          console.log({'error': response.error});
+          this.errorMessage = response.error;
+        } else if (response.status == 200 && response.body != undefined) {
+          if (response.body instanceof Array && response.body.length > 0) {
+            this.record = new FedoraResource(response.body[0]);
+            console.log({'record': this.record});
+          }
+        } else {
+          this.record = undefined;
+        }
+      });
     });
   }
 }
